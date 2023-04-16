@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Project-3: Semantic Data Retrieval</title>
+    <!-- Using Bootstrap for styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h3 class="text-primary">SPARQL Search</h3>
+      <!-- Class with margin-bottom of 3 units-->
+      <div class="mb-3">
+        <label for="query" class="form-label">Enter your SPARQL query:</label>
+        <textarea class="form-control" id="query" rows="6" placeholder="Enter Your Querry Here"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitQuery()">Submit</button>
+      <div id="results" class="mt-4"></div>
+    </div>
+    <!-- to include &  provide the functionality access of both libraries jquery and bootstrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+    <!-- to include the js file -->
+    <script src="search.js"></script>
+  </body>
+</html>
