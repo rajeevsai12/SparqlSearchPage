@@ -1,0 +1,88 @@
+Make use of the foolwing keywords:
+
+SELECT, FROM, WHERE, FILTER, ORDER BY DESC(), ASC(), DISTINCT, REDUCED, OFFSET
+OPTIONAL, UNION
+--------------------------------------------------------------------------------------------------------------------------------------
+
+My own queries:- 
+
+Query 1: retrieve the names who are "actors/actress/singers"
+         born in Boston or Los Angeles and 
+         who age is in between the 28 and 65
+
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dbp: <http://dbpedia.org/property/>
+
+SELECT DISTINCT ?name ?birthPlaceLabel ?birthDate ?age ?occupationLabel
+(IF(BOUND(?deathDate), "dead", "alive") AS ?Alive_Dead) 
+
+WHERE {
+  ?person foaf:name ?name .
+  ?person dbo:birthDate ?birthDate .
+  ?person dbo:occupation ?occupation . 
+  ?person dbo:birthPlace ?birthPlace .
+  ?occupation rdfs:label ?occupationLabel .
+  ?birthPlace rdfs:label ?birthPlaceLabel .
+
+  BIND (year(now()) - year(?birthDate) AS ?age)
+
+  FILTER ( 
+            (lang(?name) = 'en') && 
+            (lang(?birthPlaceLabel) = 'en') &&
+            (lang(?occupationLabel) = 'en') &&
+            (regex(str(?occupation), "actress|actor|singer", "i")) && 
+            (?birthPlace IN (dbr:Boston, dbr:Los_Angeles)) &&
+            (?age >= 28 && ?age <= 65) 
+          ).
+
+ OPTIONAL { ?person dbo:deathDate ?deathDate }
+}
+
+ORDER BY ASC(?birthPlaceLabel)
+LIMIT 36
+OFFSET 3
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+-- Query 2:retrieve the names who are "teachers/professors"
+         born in India or England or Australia
+         
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dbp: <http://dbpedia.org/property/>
+
+SELECT DISTINCT ?name ?birthPlaceLabel ?birthDate ?occupationLabel 
+WHERE {
+  ?person foaf:name ?name .
+  ?person dbo:birthDate ?birthDate .
+  ?person dbo:occupation ?occupation .
+  ?occupation rdfs:label ?occupationLabel .
+  ?person dbo:birthPlace ?birthPlace .
+  ?birthPlace rdfs:label ?birthPlaceLabel .
+  
+  FILTER ( 
+            (lang(?name) = 'en') && 
+            (lang(?birthPlaceLabel) = 'en') &&
+            (lang(?occupationLabel) = 'en') &&
+            (regex(str(?occupation), "teacher|president", "i")) && 
+            ?birthPlace IN (dbr:India, dbr:Australia, dbr:England)
+          ).
+}
+ORDER BY DESC(?birthPlaceLabel)
+LIMIT 33  
+OFFSET 6
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
