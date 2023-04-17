@@ -1,9 +1,20 @@
-Make use of the foolwing keywords:
+My notes:
 
-SELECT, FROM, WHERE, FILTER, ORDER BY DESC(), ASC(), DISTINCT, REDUCED, OFFSET
-OPTIONAL, UNION
 --------------------------------------------------------------------------------------------------------------------------------------
+Should make use of the following keywords:
 
+SELECT
+FROM
+WHERE
+FILTER
+ORDER BY DESC() or ASC()
+DISTINCT 
+REDUCED(not preferrable mostly)
+OFFSET
+OPTIONAL
+UNION
+
+--------------------------------------------------------------------------------------------------------------------------------------
 My own queries:- 
 
 Query 1: retrieve the names who are "actors/actress/singers"
@@ -45,8 +56,6 @@ LIMIT 36
 OFFSET 3
 
 --------------------------------------------------------------------------------------------------------------------------------------
-
-
 -- Query 2:retrieve the names who are "teachers/professors"
          born in India or England or Australia
          
@@ -55,7 +64,7 @@ PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX dbp: <http://dbpedia.org/property/>
 
-SELECT DISTINCT ?name ?birthPlaceLabel ?birthDate ?occupationLabel 
+SELECT DISTINCT ?name ?birthPlaceLabel ?birthDate ?occupationLabel AS ?profession
 WHERE {
   ?person foaf:name ?name .
   ?person dbo:birthDate ?birthDate .
@@ -73,16 +82,7 @@ WHERE {
           ).
 }
 ORDER BY DESC(?birthPlaceLabel)
-LIMIT 33  
+LIMIT 27 
 OFFSET 6
 
 --------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
