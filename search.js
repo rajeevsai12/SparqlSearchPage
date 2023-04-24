@@ -1,5 +1,9 @@
 function submitQuery() {
     var query = $('#query').val();
+    /* 
+        Dbpedia: http://dbpedia.org/sparql/
+        Wikidata: https://query.wikidata.org/ 
+    */
     var endpoint = "https://dbpedia.org/sparql"; //DBpedia endpoint
     var format = "application/sparql-results+json";
     var data = {query: query, format: format};
@@ -31,8 +35,7 @@ function submitQuery() {
         $('#results').html(html);
       },
       error: function(xhr, status, error) { //on failure displays the error
-        $('#results').html('please check the query that was sbumitted : ' + error);
+        $('#results').html('please check the format of the query that was sbumitted .....!!! ' + error);
       }
     });
   }
-  
