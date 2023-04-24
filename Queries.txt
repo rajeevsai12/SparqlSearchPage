@@ -1,26 +1,99 @@
-My notes:
+
 
 --------------------------------------------------------------------------------------------------------------------------------------
-Should make use of the following keywords:
 
-SELECT
-FROM
-WHERE
-FILTER
-ORDER BY DESC() or ASC()
-DISTINCT 
-REDUCED(not preferrable mostly)
-OFFSET
-OPTIONAL
-UNION
 
---------------------------------------------------------------------------------------------------------------------------------------
-My own queries:- 
+query-1:
 
-Query 1: retrieve the names who are "actors/actress/singers"
-         born in Boston or Los Angeles and 
-         who age is in between the 28 and 65
+SELECT DISTINCT ?name ?birthDate ?birthPlaceLabel ?occupationLabel ?runtime 
+WHERE {
+  { ?person dbo:birthPlace <http://dbpedia.org/resource/California> . }
+  UNION
+  { ?person dbo:birthPlace <http://dbpedia.org/resource/Texas> . }
+  ?person foaf:name ?name .
+  ?person dbo:birthDate ?birthDate .
+  ?person dbo:occupation ?occupation .
+  ?person dbo:birthPlace ?birthPlace .
+  ?birthPlace rdfs:label ?birthPlaceLabel .
+  ?occupation rdfs:label ?occupationLabel .
+  
+  ?movie a <http://dbpedia.org/ontology/Film> .
+  ?movie <http://dbpedia.org/ontology/genre> <http://dbpedia.org/resource/Comedy> .
+  ?movie <http://dbpedia.org/ontology/releaseDate> ?releaseDate .
+  ?movie <http://dbpedia.org/ontology/runtime> ?runtime .
+  
+  FILTER ( (lang(?name) = 'en') && 
+            (lang(?birthPlaceLabel) = 'en') && 
+            (lang(?occupationLabel) = 'en') &&
+            (regex(str(?occupation), "actor|actress|director", "I")) && 
+            (regex(str(?birthPlace), "Hollywood", "i")) &&
+            (?releaseDate > '2000-01-01'^^xsd:date) && 
+            (regex(str(?movie), "Invisible_Sister", "i")) 
+  ).
+}
+ORDER BY ASC(?birthPlaceLabel)
+-------------------------------------------------------------------
+query-2:
 
+SELECT ?name ?occupationLabel ?movieName
+WHERE {
+  ?person foaf:name ?name .
+  ?person dbo:birthDate ?birthDate .
+  ?person dbo:occupation ?occupation .
+  ?occupation rdfs:label ?occupationLabel .
+   
+  ?movie a <http://dbpedia.org/ontology/Film> .
+  ?movie <http://dbpedia.org/ontology/starring> ?person .
+  ?movie <http://dbpedia.org/ontology/starring> <http://dbpedia.org/resource/Tom_Cruise> .
+  ?movie rdfs:label ?movieName .
+
+  FILTER ( (lang(?name) = 'en') &&
+            (lang(?movieName) = 'en') &&
+            (lang(?occupationLabel) = 'en') &&
+            (regex(str(?occupation), "actor", "i")) &&
+            (str(?movieName) = 'Legend (1985 film)')
+  ).
+}
+-------------------------------------------------------------------
+query-3 :
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?filmName ?directorName ?birthPlaceName ?countryName ?countryPopulation
+WHERE {
+  ?film a dbo:Film ;
+        foaf:name ?filmName ;
+        dbo:director ?director .
+  ?director a dbo:Person ;
+            foaf:name ?directorName ;
+            dbo:birthPlace ?birthPlace .
+  ?birthPlace a dbo:Place ;
+              dbo:country ?country ;
+              rdfs:label ?birthPlaceName .
+  ?country a dbo:Country ;
+           rdfs:label ?countryName ;
+           dbo:populationTotal ?countryPopulation .
+  FILTER(((lang(?directorName) = 'en' && lang(?birthPlaceName) = 'en') && (lang(?countryName) = 'en')) && (str(?countryName) = 'India')).
+}
+------------------------------------------------------------
+query-4:
+
+SELECT DISTINCT ?countryLabel ?capitalLabel
+WHERE {
+  ?country a <http://dbpedia.org/ontology/Country> .
+  ?country <http://www.w3.org/2000/01/rdf-schema#label> ?countryLabel .
+  ?country <http://dbpedia.org/ontology/capital> ?capital .
+  ?capital <http://www.w3.org/2000/01/rdf-schema#label> ?capitalLabel .
+  ?country <http://dbpedia.org/ontology/populationTotal> ?population .
+  FILTER (lang(?countryLabel) = 'en')
+  FILTER (lang(?capitalLabel) = 'en')
+  FILTER (?population > 100000000)
+}
+------------------------------------------------------------
+query-5:
 
 PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -54,35 +127,3 @@ WHERE {
 ORDER BY ASC(?birthPlaceLabel)
 LIMIT 36
 OFFSET 3
-
---------------------------------------------------------------------------------------------------------------------------------------
--- Query 2:retrieve the names who are "teachers/professors"
-         born in India or England or Australia
-         
-
-PREFIX dbo: <http://dbpedia.org/ontology/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX dbp: <http://dbpedia.org/property/>
-
-SELECT DISTINCT ?name ?birthPlaceLabel ?birthDate ?occupationLabel AS ?profession
-WHERE {
-  ?person foaf:name ?name .
-  ?person dbo:birthDate ?birthDate .
-  ?person dbo:occupation ?occupation .
-  ?occupation rdfs:label ?occupationLabel .
-  ?person dbo:birthPlace ?birthPlace .
-  ?birthPlace rdfs:label ?birthPlaceLabel .
-  
-  FILTER ( 
-            (lang(?name) = 'en') && 
-            (lang(?birthPlaceLabel) = 'en') &&
-            (lang(?occupationLabel) = 'en') &&
-            (regex(str(?occupation), "teacher|president", "i")) && 
-            ?birthPlace IN (dbr:India, dbr:Australia, dbr:England)
-          ).
-}
-ORDER BY DESC(?birthPlaceLabel)
-LIMIT 27 
-OFFSET 6
-
---------------------------------------------------------------------------------------------------------------------------------------
